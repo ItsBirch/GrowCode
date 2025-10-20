@@ -1,0 +1,92 @@
+/* Дополнительные стили для системы профилей */
+.container { max-width:760px; width:500px; }
+#profileApp{ display:flex; gap:14px; }
+.profiles-pane{ width:100%; background:linear-gradient(180deg,#f8fff9,#ecfff1); padding:0px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.editor-pane{ width:100%; background:linear-gradient(180deg,#ffffff,#fbfffb); padding:1px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+.profiles-list{ list-style:none; padding:0; margin:8px 0; max-height:260px; overflow:auto; }
+.profiles-list li{ padding:10px; border-radius:12px; margin-bottom:8px; background:linear-gradient(180deg,#f0fff9,#e6fff2); display:flex; align-items:center; border:1px solid #d9f3e8 }
+.profile-row{ display:flex; align-items:center; width:100%; }
+.avatar{ width:56px; height:56px; background:#eee; border-radius:12px; background-size:cover; background-position:center; margin-right:12px; }
+.meta{ flex:1; }
+.meta .name{ font-weight:700; font-size:1em; color:#1f5b3f }
+.meta .email{ font-size:12px; color:#446; opacity:0.85 }
+.actions{ margin-left:8px }
+.profile-item button{ padding:6px 10px; border-radius:10px; background:#00b080; color:#fff; border:none }
+.profiles-header{ display:flex; gap:8px; margin-bottom:8px; align-items:center }
+.profiles-header input, .profiles-header select{ flex:1; padding:8px; border-radius:8px; border:1px solid #bfe6d7 }
+.profile-actions{ display:flex; gap:8px }
+button.button{ padding:10px 14px }
+
+/* детали и создание */
+#profileDetailPage, #profileCreatePage { padding:12px }
+#profileDetailPage h3 { margin:0 0 6px 0 }
+#profileDetailAvatar{ border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+
+.editor-pane label{ display:block; font-size:14px }
+.editor-pane input[type="text"], .editor-pane input[type="email"], .editor-pane input[type="number"]{ width:100%; padding:8px; border-radius:8px; border:1px solid #dfefe0 }
+
+@media(max-width:780px){ .container{ width:360px } #profileApp{ flex-direction:column } .profiles-pane,.editor-pane{ width:100% } }
+
+/* auth card */
+.auth-card{ padding:12px; border-radius:12px; background:linear-gradient(180deg,#fff,#f7fffb); box-shadow:0 6px 18px rgba(0,0,0,0.06); text-align:center }
+.auth-card input{ width:250px; padding:10px; margin:6px 0; border-radius:10px; border:1px solid #e6f6ee }
+.auth-actions{ display:flex; justify-content:center }
+.auth-toggle{ display:flex; gap:8px; justify-content:center; margin-bottom:10px }
+.auth-tab{ padding:8px 12px; border-radius:10px; background:transparent; border:1px solid transparent; cursor:pointer }
+.auth-tab.active{ background:#00b080; color:#fff }
+
+.profile-card{ padding:18px 12px; border-radius:14px; background:linear-gradient(180deg,#f8fff9,#eefef5); text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+
+/* larger progress text */
+.progress-large{ font-size:1.15em; font-weight:600; color:#0e6b3f }
+
+/* circular avatar */
+.profile-avatar-circle{ width:120px; height:120px; border-radius:50%; object-fit:cover; box-shadow:0 8px 18px rgba(0,0,0,0.08); border:4px solid rgba(255,255,255,0.6); }
+
+/* smaller avatar variant for compact profile */
+.profile-avatar-small{ width:72px; height:72px; border-radius:50%; object-fit:cover; box-shadow:0 6px 14px rgba(0,0,0,0.08); border:3px solid rgba(255,255,255,0.06); }
+
+/* smooth page transitions */
+.page { transition: transform 0.55s cubic-bezier(.2,.9,.2,1), opacity 0.45s ease; }
+
+/* more pronounced entrance animation */
+.page.active { transform: translateY(0) scale(1); opacity:1; }
+.page { transform-origin: top center; }
+
+/* hint bubble */
+.hint-bubble{ position:relative; display:inline-block; }
+.hint-bubble .hint-text{ display:none; position:absolute; bottom:125%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:8px 10px; border-radius:8px; font-size:13px; white-space:nowrap; z-index:50; }
+.hint-bubble.show .hint-text{ display:block; animation:fadeIn 0.28s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+/* hover-intent tabs look */
+.tab.hovered { transform:translateY(-6px) scale(1.03); color:#007a58; }
+
+/* dark theme overrides (applies when body.dark) */
+body.dark .container,
+body.dark .editor-pane,
+body.dark .profiles-pane,
+body.dark .profile-card,
+body.dark .auth-card,
+body.dark .settings-item,
+body.dark .code-block { background: #0d1622 !important; color: #e7f6ff !important; border-color: #122231 !important; }
+body.dark p, body.dark h1, body.dark h3, body.dark h4, body.dark .meta .name { color: #e7f6ff !important; }
+body.dark h1, body.dark h3, body.dark h4 { color:#8fbefc !important; }
+body.dark .button { background:#11485f; color:#e7f6ff; box-shadow:0 4px 12px rgba(0,0,0,0.45); }
+body.dark .button:hover { background:#0e5f85; }
+body.dark .active-indicator { background:#63b3ff; }
+
+/* button active feedback */
+.button:active{ opacity:0.6; transform:translateY(1px); }
+
+/* fake caret for name edit (blinking slash) */
+.fake-caret{ display:inline-block; margin-left:4px; color:transparent; position:relative; }
+.fake-caret::after{ content:"|"; position:relative; color:var(--caret-color, #fff); margin-left:2px; animation:blink 1s steps(1) infinite; }
+@keyframes blink{ 0%{opacity:1}50%{opacity:0}100%{opacity:1} }
+
+/* settings option layout tweaks */
+.settings-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.settings-item { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:10px; background:linear-gradient(180deg,#fff,#f4fff7); border:1px solid #e6f7ec }
+
+/* small helper for danger button */
+.danger { background:#e05050 !important; color:#fff !important }

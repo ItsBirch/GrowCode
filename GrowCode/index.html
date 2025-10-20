@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeGarden Mini</title>
+  <style>
+body {
+  margin:0;
+  font-family:system-ui,sans-serif;
+  background:linear-gradient(to bottom,#e0fff5,#f0fef9);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+  transition:0.5s;
+  color:#2d5d2d;
+}
+body.dark { background:#0b1d33; color:#fff; }
+
+.container {
+  background:#f0fff9;
+  border-radius:20px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  width:360px;
+  height:500px;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  border:2px solid #b2f0d0;
+  transition:0.5s;
+  display:flex;
+  flex-direction:column;
+}
+body.dark .container { background:#12233d; border-color:#0a1a2d; }
+
+.tabs {
+  display:flex;
+  border-bottom:2px solid #b2f0d0;
+  margin-bottom:10px;
+  position:relative;
+}
+body.dark .tabs { border-color:#0a1a2d; }
+
+.tab {
+  flex:1;
+  text-align:center;
+  padding:10px 0;
+  font-weight:500;
+  cursor:pointer;
+  position:relative;
+  transition:0.3s;
+}
+.tab:hover { color:#00b080; transform:scale(1.05); }
+body.dark .tab:hover { color:#5fcfff; }
+
+.active-indicator {
+  position:absolute;
+  bottom:-1px;
+  height:3px;
+  background:#00b080;
+  border-radius:2px;
+  transition:0.3s;
+  width:33.33%;
+  left:16.66%;
+  transform:translateX(-50%);
+}
+body.dark .active-indicator { background:#5fcfff; }
+
+.page-content {
+  flex:1;
+  overflow:hidden;
+  position:relative;
+}
+
+.page {
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  transform:translateY(10px);
+  transition:0.4s;
+  pointer-events:none;
+  overflow-y:auto;
+  padding-right:5px;
+  box-sizing:border-box;
+}
+.page.active {
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:all;
+}
+
+h1{text-align:center; font-size:1.5em; margin-bottom:10px;}
+h4{text-align:center; font-size:1.5em; margin-bottom:10px;}
+p{ font-size:0.95em; line-height:1.4; padding:0 5px;}
+.p1{text-align:center; font-size:1em; line-height:1.4; padding:0 5px;}
+.button {
+  display:block;
+  margin:15px auto 0;
+  padding:10px 20px;
+  font-size:14px;
+  background:#00b080;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  color:#fff;
+  box-shadow:0 2px 6px rgba(0,176,128,0.4);
+  transition:0.3s;
+}
+.button:hover{transform:scale(1.05); background:#00c08f;}
+body.dark .button{background:#5fcfff; color:#000; box-shadow:0 2px 6px rgba(95,207,255,0.4);}
+body.dark .button:hover{background:#3fbfff;}
+
+.plant-emoji {
+  font-size:2em;
+  display:block;
+  text-align:center;
+  animation:bounce 2s infinite alternate;
+  margin:10px 0;
+}
+@keyframes bounce {0%{transform:translateY(0);}100%{transform:translateY(-10px);}}
+
+.course-menu {
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:10px;
+}
+.course-item {
+  width:35px;
+  height:35px;
+  background:#d0fff0;
+  border:2px solid #a0e0c0;
+  border-radius:12px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  font-weight:bold;
+  color:#2d5d2d;
+  font-size:0.9em;
+  transition:0.3s;
+}
+.course-item.active {
+  background:#00b080;
+  color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 4px 8px rgba(0,176,128,0.4);
+}
+body.dark .course-item{background:#0d2b47; border-color:#0a1a2d; color:#aaa;}
+body.dark .course-item.active{background:#5fcfff; color:#000;}
+
+.settings-option {display:flex; justify-content:center; margin:5px 0;}
+.theme-circle {
+  width:25px; height:25px; border-radius:50%; margin:0 10px;
+  cursor:pointer; transition:0.3s;
+  border:2px solid #b2f0d0;
+}
+.theme-circle:hover { transform:scale(1.2); }
+.theme-circle.light { background:#fff; }
+.theme-circle.dark { background:#000; border-color:#5fcfff;}
+body.dark .theme-circle.light{border-color:#0a1a2d;}
+body.dark .theme-circle.dark{border-color:#5fcfff;}
+#sem{text-align:center;}
+</style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="home">Главная</div>
+    <div class="tab" data-tab="profile">Профиль</div>
+    <div class="tab" data-tab="settings">Настройки</div>
+    <div class="active-indicator" id="activeIndicator"></div>
+  </div>
+
+  <div class="course-menu" id="courseMenu" style="display:none;">
+    <div class="course-item active" data-slide="0">1</div>
+    <div class="course-item" data-slide="1">2</div>
+    <div class="course-item" data-slide="2">3</div>
+    <div class="course-item" data-slide="3">4</div>
+    <div class="course-item" data-slide="4">5</div>
+  </div>
+
+  <div class="page-content">
+    <div class="page active" id="homePage">
+      <h1>Welcome</h1>
+      <span class="plant-emoji">🌱</span>
+      <h1>Добро пожаловать в "GrowCode"!</h1>
+      <p class="p1">Здесь ты не просто изучаешь Python — ты выращиваешь свой виртуальный сад знаний.
+Каждый пройденный урок — это новое семечко, которое ты сажаешь.
+Пиши код, решай задания, и наблюдай, как твой сад оживает:
+маленькие ростки превращаются в крепкие деревья,
+а вместе с ними растут и твои навыки программирования.</p>
+      <button class="button" id="startCourseBtn">Начать курс</button>
+    </div>
+
+    <div class="page" id="slide0">
+      <h3 id="sem">Твое первое семечко знаний🌱</h3>
+      <span class="plant-emoji">💡</span>
+      <p>
+        Добро пожаловать в начало твоего пути к уверенной сдаче ОГЭ по информатике!  
+        Здесь ты вырастишь не просто сад — а сад знаний, где каждый урок станет новым ростком твоих умений в Python.
+      </p>
+
+      <p>
+        Вместе мы шаг за шагом пройдем темы, необходимые для экзамена:
+        от основ синтаксиса до алгоритмов и логики программирования.  
+        Всё просто, понятно и наглядно — ведь каждая тема в GrowCode представлена как маленький интерактивный "урожай" знаний.
+      </p>
+      <span class="plant-emoji">⬇️</span>
+      <p>
+        После завершения курса ты:
+        <br>• Поймёшь структуру и логику заданий по Python в ОГЭ  
+        <br>• Научишься быстро писать корректные и эффективные решения  
+        <br>• Перестанешь бояться кода — и начнёшь видеть в нём красоту  
+        <br>• Сможешь уверенно выполнить любую практическую часть экзамена
+      </p>
+      <p>
+        Твой сад только начинает расти 🌿  
+        Каждый урок — это капля внимания, каждое задание — лучик света.  
+        Чем больше ты ухаживаешь за своим садом, тем выше твой результат на экзамене.
+      </p>
+      <button class="button" id="nextLessonBtn">Продолжить</button>
+    </div>
+    
+    <div class="page" id="slide1">
+      <h4>Переменные и типы данных — первый шаг к программированию</h4>
+<p>1️⃣ Переменные — что это?</p>
+	<p>•	Это «контейнеры» для хранения информации.</p>
+	<p>•	Пример:</p>
+<div class="code-block">
+<pre>
+<code class="python">
+age = 15
+name = "Дима"
+is_student = True
+
+print(name, age)
+</code>
+</pre>
+<button onclick="copyCode(this)" class="button1">Скопировать</button>
+</div>
+<script>
+function copyCode(btn){
+  const code = btn.previousElementSibling.innerText;
+  navigator.clipboard.writeText(code);
+  btn.innerText = "Скопировано!";
+  setTimeout(()=>btn.innerText="Скопировать",1000);
+}
+</script>
+
+
+<style>
+.code-block {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 20px;
+  position: relative;
+  font-family: monospace;
+}
+.button1 {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+</style>
+<p>2️⃣ Основные типы данных:</p>
+<p>int   10         Целое число </p>
+<p>float 3.14       Дробное число </p>
+<p>str   "Привет"   Строка текста</p>
+<p>bool  True/False Логическое значение </p>
+<p>4️⃣ Кратко о правилах:</p>
+<p>•	Переменные чувствительны к регистру (Name ≠ name). </p>
+<p>	•	Используй только буквы, цифры и _ в имени. </p>
+<p>	•	Не начинай имя с цифры.
+</p>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="button continue-btn" data-next="2">Продолжить</button>
+      </div>
+    </div>
+    
+    <div class="page" id="slide2">
+      <h1>Слайд 3</h1>
+      <span class="plant-emoji">🌳</span>
+      <p>Основные типы данных и их использование.</p>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="button continue-btn" data-next="3">Продолжить</button>
+      </div>
+    </div>
+    
+    <div class="page" id="slide3">
+      <h1>Слайд 4</h1>
+      <span class="plant-emoji">🌺</span>
+      <p>if, else, elif и примеры программ.</p>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="button continue-btn" data-next="4">Продолжить</button>
+      </div>
+    </div>
+    
+    <div class="page" id="slide4">
+      <h1>Слайд 5</h1>
+      <span class="plant-emoji">🌴</span>
+      <p>Циклы for и while, повторение действий.</p>
+      <div style="text-align:center;margin-top:12px;">
+      </div>
+    </div>
+
+    <div class="page" id="profilePage">
+      <h1>Профиль</h1>
+      <div id="profileApp">
+        <!-- auth card -->
+        <div class="auth-card" id="authCard">
+          <h3 id="authTitle">Вход / Регистрация</h3>
+          <form id="authForm">
+            <input id="authName" placeholder="Имя" required />
+            <input id="authPassword" type="password" placeholder="Пароль" required />
+            <div class="auth-actions">
+              <button class="button" id="authSubmit" type="submit">Войти или зарегистрироваться</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- profile view (centered in main interface) -->
+        <div id="profileInfoWrapper" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;">
+          <img id="profileAvatarMain" src="profil.png" alt="avatar" class="profile-avatar-small" onerror="this.style.display='none'" />
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h3 id="profileMainName">Имя<span id="fakeCaret" class="fake-caret" style="display:none;"></span></h3>
+            <button id="editNameIcon" title="Изменить имя" style="background:transparent;border:none;cursor:pointer;font-size:18px;">✏️</button>
+          </div>
+          <p id="profileMainProgress" class="progress-large">Пройдено слайдов: 0/5</p>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:6px;align-items:center;">
+            <input id="editNameInput" placeholder="Изменить имя" style="padding:8px;border-radius:8px;border:1px solid #dfe;display:none;width:160px;" />
+            <button class="button" id="saveNameBtn" style="display:none;">Сохранить</button>
+            <button class="button" id="cancelNameBtn" style="display:none;">Отмена</button>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+            <button class="button" id="logoutBtn" style="background:#e05050;">Выйти</button>
+          </div>
+          <!-- restore account quick action visible after logout -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="profileCreatePage">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="course-menu" style="display:flex;gap:8px;align-items:center;">
+          <button class="button" id="backFromCreateBtn" style="margin:0;">← Назад</button>
+        </div>
+        <div style="font-weight:600;" id="createPageTitle">Новый профиль</div>
+      </div>
+      <div style="margin-top:12px;">
+        <div class="editor-pane" id="editorPane">
+          <form id="profileForm">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <label>Имя: <input id="profileName" required /></label>
+              <label>Email: <input id="profileEmail" type="email" /></label>
+              <label>Аватар: <input id="profileAvatar" type="file" accept="image/*" /></label>
+              <img id="avatarPreview" src="" alt="avatar" style="display:none;width:120px;height:120px;border-radius:12px;margin:8px 0;object-fit:cover;" />
+              <label>Пройдено слайдов: <input id="profileProgress" type="number" min="0" max="5" value="0" /></label>
+              <div style="margin-top:10px;display:flex;gap:8px;">
+                <button class="button" id="saveProfileBtn" type="submit">Сохранить</button>
+                <button class="button" id="cancelEditBtn" type="button">Отмена</button>
+                <button class="button" id="deleteProfileBtn" type="button" style="background:#e05050;">Удалить</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="profileDetailPage">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="course-menu" style="display:flex;gap:8px;align-items:center;">
+          <button class="button" id="backFromProfileBtn" style="margin:0;">← Назад</button>
+        </div>
+        <div style="font-weight:600;">Детали профиля</div>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:12px; align-items:flex-start;">
+        <img id="profileDetailAvatar" src="" alt="avatar" style="width:100px;height:100px;border-radius:12px;object-fit:cover;display:none;" />
+        <div>
+          <h3 id="profileDetailName">Имя</h3>
+          <p id="profileDetailEmail">email</p>
+          <p>Прогресс: <span id="profileDetailProgress">0</span>/5</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="settingsPage">
+      <h1>Настройки</h1>
+      <div class="settings-list">
+        <div class="settings-item"><div>Тема интерфейса</div><div class="theme-options"><div class="theme-circle light" data-theme="light"></div><div class="theme-circle dark" data-theme="dark"></div></div></div>
+        <div class="settings-item"><div>Показывать подсказки</div><div><input type="checkbox" id="optHints" /></div></div>
+        <div class="settings-item"><div>Уведомления</div><div><input type="checkbox" id="optNotifications" /></div></div>
+        <div class="settings-item"><div>Звук</div><div><input type="checkbox" id="optSound" /></div></div>
+        <div class="settings-item"><div>Удалить профиль</div><div><button id="deleteAccountBtn" class="button danger">Удалить</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('.tab');
+  const activeIndicator = document.getElementById('activeIndicator');
+  const pages = document.querySelectorAll('.page');
+  const courseMenu = document.getElementById('courseMenu');
+  const courseItems = document.querySelectorAll('.course-item');
+  const startBtn = document.getElementById('startCourseBtn');
+  const nextLessonBtn = document.getElementById('nextLessonBtn');
+  const themeCircles = document.querySelectorAll('.theme-circle');
+
+  let activeTab = 'home';
+  let currentSlide = 0;
+  let isInCourseMode = false;
+
+  function showPage(id) {
+    pages.forEach(p => p.classList.remove('active'));
+    const page = document.getElementById(id);
+    if (page) page.classList.add('active');
+  }
+
+  function updateIndicator(tabType) {
+    let index = tabType === 'home' ? 0 : tabType === 'profile' ? 1 : 2;
+    activeIndicator.style.left = `${16.66 + 33.33 * index}%`;
+  }
+
+  function showHomePage() {
+    // Если пользователь залогинен и есть progress>0, переходим на соответствующий слайд
+    try{
+      if(window.__grow_auth){
+        const sid = window.__grow_auth.getSession();
+        if(sid){
+          const users = window.__grow_auth.loadUsers();
+          const me = users.find(u=>u.id===sid);
+          if(me && me.progress && me.progress>0){
+            // show last progress slide
+            if(window.showCourseSlide) { window.showCourseSlide(me.progress-1); return; }
+          }
+        }
+      }
+    }catch(e){}
+
+    showPage('homePage');
+    courseMenu.style.display = 'none';
+    isInCourseMode = false;
+    activeTab = 'home';
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs[0].classList.add('active');
+    updateIndicator(activeTab);
+  }
+
+  function showCourseSlide(slideIndex) {
+    showPage('slide' + slideIndex);
+    courseMenu.style.display = 'flex';
+    isInCourseMode = true;
+    currentSlide = slideIndex;
+    // Не обновляем прогресс автоматически при просмотре — прогресс обновляется
+    // только при явном нажатии кнопки "Продолжить" (advanceProgressTo).
+    courseItems.forEach((i, idx) => i.classList.toggle('active', idx === currentSlide));
+  }
+
+  // expose to global so external scripts (app.js) can navigate slides
+  window.showCourseSlide = showCourseSlide;
+  window.showHomePage = showHomePage;
+
+  // Обработчики для вкладок
+  tabs.forEach(tab => {
+    tab.addEventListener('mouseenter', () => {
+      const tabType = tab.dataset.tab;
+      let index = tabType === 'home' ? 0 : tabType === 'profile' ? 1 : 2;
+      // only move the indicator visually and add hovered style; do NOT switch pages on hover
+      activeIndicator.style.left = `${16.66 + 33.33 * index}%`;
+      tab.classList.add('hovered');
+    });
+
+    tab.addEventListener('mouseleave', () => {
+      // return indicator to the permanently selected tab and remove hover style
+      updateIndicator(activeTab);
+      tab.classList.remove('hovered');
+    });
+
+    tab.addEventListener('click', () => {
+      // Если мы в режиме курса и нажимаем на Главную - возвращаемся к домашней странице
+      if (isInCourseMode && tab.dataset.tab === 'home') {
+        showHomePage();
+        return;
+      }
+      
+      // Обычное переключение вкладок
+      activeTab = tab.dataset.tab;
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      if (activeTab === 'home') {
+        showHomePage();
+      } else if (activeTab === 'profile') {
+        showPage('profilePage');
+        courseMenu.style.display = 'none';
+        isInCourseMode = false;
+      } else {
+        showPage('settingsPage');
+        courseMenu.style.display = 'none';
+        isInCourseMode = false;
+      }
+
+      updateIndicator(activeTab);
+    });
+  });
+
+  // Обработчик для кнопки "Начать курс"
+  startBtn.addEventListener('click', () => {
+    showCourseSlide(0);
+  });
+
+  // Обработчик для кнопки "Продолжить" в слайде 0
+  nextLessonBtn.addEventListener('click', () => {
+    showCourseSlide(1);
+  });
+
+  // Обработчики для элементов курса
+  courseItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const slideIndex = parseInt(item.dataset.slide);
+      showCourseSlide(slideIndex);
+    });
+  });
+
+  // Обработчики для смены темы
+  themeCircles.forEach(c => {
+    c.addEventListener('click', () => {
+      document.body.className = c.dataset.theme;
+    });
+  });
+
+  // Инициализация
+  // При инициализации проверим сессию — showHomePage сам решит, куда показывать
+  showHomePage();
+  updateIndicator(activeTab);
+});
+</script>
+  <script src="app.js"></script>
+</body>
+</html>
